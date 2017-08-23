@@ -18,6 +18,10 @@ except:
 db = TinyDB('projects.json')
 
 def list_projects(project_or_org,specifier):
+	try: 
+		open("creds.data", "r")
+	except:
+		open("creds.data", "w")
 	service = discovery.build('cloudresourcemanager',
 		'v1',credentials=storage.get())
 
