@@ -1,6 +1,7 @@
 from tinydb import TinyDB, Query
 from oauth2client.file import Storage
 from oauth2client.client import HttpAccessTokenRefreshError
+from oauth2client.client import ApplicationDefaultCredentialsError
 from googleapiclient import discovery
 storage = Storage('creds.data')
 import logging
@@ -18,10 +19,6 @@ except:
 db = TinyDB('projects.json')
 
 def list_projects(project_or_org,specifier):
-	try: 
-		open("creds.data", "r")
-	except:
-		open("creds.data", "w")
 	service = discovery.build('cloudresourcemanager',
 		'v1',credentials=storage.get())
 
@@ -62,7 +59,7 @@ except:
 	pass
 try:
 	list_projects(sys.argv[1],sys.argv[2])
-except HttpAccessTokenRefreshError:
+except (HttpAccessTokenRefreshError, ApplicationDefaultCredentialsError):
 	import config
 	list_projects(sys.argv[1],sys.argv[2])
 for project in db.table("Project").all():
