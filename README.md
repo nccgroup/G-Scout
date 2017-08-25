@@ -12,7 +12,7 @@ and add Security Reviewer and Viewer permissions to the service account created 
 4. Place the JSON file (named keyfile.json) generated in step 3 into the application directory.
 
 For the security reviewer, to run the application:<br>
-sudo pip -r requirements.txt <br>
+sudo pip install -r requirements.txt <br>
 python gscout.py "project" "project name" <br> 
 The HTML report output will be in the HTML folder. <br>
 
