@@ -10,6 +10,7 @@ Service Account:
 and add Security Reviewer and Viewer permissions to the service account created in step 1.
 3. Generate a Service Account key from https://console.cloud.google.com/apis/credentials?project=[project].
 4. Place the JSON file (named keyfile.json) generated in step 3 into the application directory.
+5. Set the environment variable GOOGLE_APPLICATION_CREDENTIALS to the path of the JSON file downloaded. Or use the SDK to run gcloud "auth application-default login".
 
 For the security reviewer, to run the application:<br>
 sudo pip install -r requirements.txt <br>
