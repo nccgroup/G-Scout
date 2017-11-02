@@ -17,7 +17,8 @@ parser = argparse.ArgumentParser(parents=[tools.argparser])
 flags = parser.parse_args(args=[])
 
 if os.path.isfile('keyfile.json'):
-	creds = GoogleCredentials.get_application_default()
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getcwd()+"/keyfile.json"
+    creds = GoogleCredentials.get_application_default()
 else:
 	creds = tools.run_flow(flow, storage, flags)
 	
