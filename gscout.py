@@ -7,6 +7,8 @@ storage = Storage('creds.data')
 import logging
 logging.basicConfig(filename="log.txt")
 logging.getLogger().setLevel(logging.ERROR)
+# Silence some errors
+logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 import os
 import sys
 from fetch import fetch
