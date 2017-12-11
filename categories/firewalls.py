@@ -3,13 +3,24 @@ from tinydb import TinyDB, Query
 
 def add_network_rules(projectId, db):
 	for firewall in db.table('Firewall').all():
-		if not firewall.get('sourceRanges'):
-			firewall['sourceRanges'] = firewall['sourceTags']
+		try:
+			if not firewall.get('sourceRanges'):
+				firewall['sourceRanges'] = firewall['sourceTags']
+		except KeyError:
+				firewall['sourceRanges'] = "N/A"
+		continue
+		try:
+			if not firewall.get('destinationRanges'):
+				firewall['destinationRanges'] = firewall['destinationTags']
+		except KeyError:
+				firewall['destinationRanges'] = "N/A"
+		continue
 		db.table('Network').update(
 					add_rule({
 						"name":firewall['name'], 
 						"allowed":firewall['allowed'],
 						"sourceRanges":firewall['sourceRanges'],
+						"destinationRanges":firewall['destinationRanges'],
 						"tags":firewall.get('targetTags')
 						}),
 					eids=[db.table('Network').get(
@@ -26,7 +37,7 @@ def add_affected_instances(projectId, db):
 						add_instance({
 						"kind":instance['kind'],
 						"selfLink":instance['selfLink'],
-						"tags":instance.get('tags'),
+#						"tags":instance.get('tags'),
 						"name":instance['name']
 						}),eids=[firewall.eid])
 					try:
@@ -36,7 +47,7 @@ def add_affected_instances(projectId, db):
 							add_instance({
 							"kind":instance['kind'],
 							"selfLink":instance['selfLink'],
-							"tags":instance.get('tags'),
+#							"tags":instance.get('tags'),
 							"name":instance['name']
 							}),eids=[firewall.eid])
 					except TypeError:
