@@ -132,3 +132,6 @@ def rules(projectId):
 	Rule("Use of Port Ranges", "Firewall", 
 		lambda firewall: [allow for allow in firewall['allowed'] 
 		if allow.get('ports') and [port for port in allow['ports'] if "-" in port]])
+
+	Rule("Unused Firewall Rules", "Firewall", 
+		lambda firewall: not firewall.get('affectedInstances') )
