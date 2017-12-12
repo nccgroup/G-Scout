@@ -8,9 +8,12 @@ def rules(projectId):
 	db = TinyDB("project_dbs/" + projectId + ".json")
 	class Rule:
 		def __init__(self, rule_title, category, filter_func):
-			db.table('Rule').insert({"title":rule_title,"category":category})
-			for entity in list(filter(filter_func,db.table(category).all())):
-				add_finding.add_finding(db,category, entity.eid, rule_title)
+			try:
+				db.table('Rule').insert({"title":rule_title,"category":category})
+				for entity in list(filter(filter_func,db.table(category).all())):
+					add_finding.add_finding(db,category, entity.eid, rule_title)
+			except KeyError:
+				pass
 
 	Rule("Unused Network", "Network", 
 		lambda network: not network.get('members'))
