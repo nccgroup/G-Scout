@@ -60,17 +60,15 @@ def display_results(db, projectId):
 	dropdowns = {}
 	categories = set([])
 
-	dropdowns = {}
-	categories = set([])
 	for rule in db.table("Rule").all():
 		categories.add(rule['category'])
 	for category in categories:
 		dropdowns[category] = add_to_dropdown(category)
-	generate_pages("Bucket","name",["name","selfLink","acls","defacls"],dropdowns)
-	generate_pages("Firewall","name",["network","sourceRanges","allowed","description","targetTags","affectedInstances"],dropdowns)
+	generate_pages("Bucket","name",["name","location","storageClass","selfLink","acls","defacls"],dropdowns)
+	generate_pages("Firewall","name",["network","sourceRanges","direction","destinationRanges","allowed","description","targetTags","affectedInstances"],dropdowns)
 	generate_pages("Network","name",["firewallRules","members"],dropdowns)
 	generate_pages("Role","role",["members"],dropdowns)
-	generate_pages("Compute Engine","name", ["zone","key", "networkInterfaces"],dropdowns)
+	generate_pages("Compute Engine","name", ["zone","key", "networkInterfaces","tags"],dropdowns)
 	generate_pages("SQL Instance","selfLink", ["connectionName","databaseVersion",["settings","backupConfiguration"],["settings","ipConfiguration"]],dropdowns)
 	generate_pages("Service Account","name", ["keys","iam_policies","uniqueId","roles"],dropdowns)
 
