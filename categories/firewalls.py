@@ -8,13 +8,11 @@ def add_network_rules(projectId, db):
 				firewall['sourceRanges'] = firewall['sourceTags']
 		except KeyError:
 				firewall['sourceRanges'] = "N/A"
-		continue
 		try:
 			if not firewall.get('destinationRanges'):
 				firewall['destinationRanges'] = firewall['destinationTags']
 		except KeyError:
 				firewall['destinationRanges'] = "N/A"
-		continue
 		db.table('Network').update(
 					add_rule({
 						"name":firewall['name'], 
