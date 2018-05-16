@@ -15,7 +15,9 @@ There are two ways for the project owner to grant API permissions:
 
 To run the application:
 ```sh
-sudo pip install -r requirements.txt
+virtualenv -p python2 venv
+source venv/bin/activate
+pip install -r requirements.txt
 python gscout.py -h
 ```
 
