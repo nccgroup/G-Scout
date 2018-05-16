@@ -4,7 +4,7 @@ from oauth2client.client import HttpAccessTokenRefreshError
 from oauth2client.file import Storage
 from tinydb import TinyDB
 import os
-from fetch import fetch
+from core.fetch import fetch
 import logging
 import argparse
 
@@ -78,7 +78,7 @@ def main():
         list_projects(project_or_org='project' if args.project else 'organization',
                       specifier=args.project if args.project else args.organization)
     except (HttpAccessTokenRefreshError, ApplicationDefaultCredentialsError):
-        import config
+        from core import config
         list_projects(project_or_org='project' if args.project else 'organization',
                       specifier=args.project if args.project else args.organization)
 

@@ -2,7 +2,7 @@ import datetime
 
 from tinydb import TinyDB
 
-import add_finding
+from core import add_finding
 from categories.firewalls import test_allowed
 from categories.service_account_keys import key_is_old
 

@@ -1,7 +1,7 @@
 from googleapiclient import discovery
 from tinydb import TinyDB
 
-from insert_entity import insert_entity
+from core.insert_entity import insert_entity
 
 db = TinyDB('entities.json')
 from oauth2client.file import Storage
