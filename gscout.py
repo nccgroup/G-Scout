@@ -4,7 +4,6 @@ from oauth2client.client import HttpAccessTokenRefreshError
 from oauth2client.file import Storage
 from tinydb import TinyDB
 import os
-import sys
 from fetch import fetch
 import logging
 import argparse
