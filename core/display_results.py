@@ -80,7 +80,7 @@ def display_results(db, projectId):
                     "affectedInstances"], dropdowns)
     generate_pages("Network", "name", ["firewallRules", "members"], dropdowns)
     generate_pages("Role", "role", ["members"], dropdowns)
-    generate_pages("Compute Engine", "name", ["zone", "key", "networkInterfaces", "tags"], dropdowns)
+    generate_pages("Compute Engine", "name", ["serviceAccounts", "networkInterfaces", "tags"], dropdowns)
     generate_pages("SQL Instance", "selfLink",
                    ["connectionName", "databaseVersion", ["settings", "backupConfiguration"],
                     ["settings", "ipConfiguration"]], dropdowns)

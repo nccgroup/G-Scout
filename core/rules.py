@@ -62,6 +62,8 @@ def rules(projectId):
                                and datetime.datetime.strptime(snapshot['creationTimestamp'][:10], "%Y-%m-%d")
                                < datetime.datetime.now() - datetime.timedelta(days=30)])
 
+    Rule("Allows full access to all Cloud APIs", "Compute Engine", lambda instance: "https://www.googleapis.com/auth/cloud-platform" in instance['serviceAccounts'][0]['scopes'])
+
     Rule("Automatic Backup Disabled", "SQL Instance",
          lambda instance: not instance.get('settings').get('backupConfiguration').get('enabled'))
 
