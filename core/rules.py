@@ -64,6 +64,9 @@ def rules(projectId):
 
     Rule("Allows full access to all Cloud APIs", "Compute Engine", lambda instance: "https://www.googleapis.com/auth/cloud-platform" in instance['serviceAccounts'][0]['scopes'])
 
+    Rule("Serial Port Enabled", "Compute Engine", lambda instance: instance.get("metadata").get("items")
+    and [True for item in instance.get("metadata").get("items") if item['key']=="serial-port-enable" and item['value']=='true'])
+
     Rule("Automatic Backup Disabled", "SQL Instance",
          lambda instance: not instance.get('settings').get('backupConfiguration').get('enabled'))
 
