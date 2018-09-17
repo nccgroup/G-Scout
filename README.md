@@ -23,7 +23,7 @@ python gscout.py -h
 
 The HTML report output will be in the "Report Output" folder.
 
-When specifying the project name you can also use a wildcard to run G-Scout on multiple projects, for example: `python gscout.py --project "dev-*"`.
+When specifying the project name you can also use a wildcard to run G-Scout on multiple projects, for example: `python gscout.py --project-name "dev-*"`.
 You can also run G-Scout on all projects in an organization like this: `python gscout.py --organization "organization id"`, where the id will be a number you can find next to the organization name in the GCP console. 
 
 To create a custom rule, add it to the rules.py file. A Rule object takes a name, a category, and a filter function. The function will be passed a json object corresponding to the category. 
