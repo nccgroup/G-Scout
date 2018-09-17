@@ -11,7 +11,8 @@ import argparse
 # configure command line parameters
 parser = argparse.ArgumentParser(description='Google Cloud Platform Security Tool')
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--project', '-p', help='Project name to scan')
+group.add_argument('--project-name', '-p-name', help='Project name to scan')
+group.add_argument('--project-id', '-p-id', help='Project id to scan')
 group.add_argument('--organization', '-o', help='Organization id to scan')
 args = parser.parse_args()
 
@@ -35,10 +36,10 @@ def list_projects(project_or_org, specifier):
 
     if project_or_org == "organization":
         request = service.projects().list(filter='parent.id:%s' % specifier)
-    elif project_or_org == "project":
+    elif project_or_org == "project-name":
         request = service.projects().list(filter='name:%s' % specifier)
-        # TODO add filtering with project ID
-        # request = service.projects().list(filter='id:%s' % specifier)
+    elif project_or_org == "project-id":
+        request = service.projects().list(filter='id:%s' % specifier)
     else:
         raise Exception('Organization or Project not specified.')
     while request is not None:
@@ -69,14 +70,17 @@ def fetch_all(project):
 
 
 def main():
-
     try:
         os.makedirs("Report Output")
     except:
         pass
     try:
-        list_projects(project_or_org='project' if args.project else 'organization',
-                      specifier=args.project if args.project else args.organization)
+        if args.project_name :
+            list_projects(project_or_org='project-name', specifier=args.project_name)
+        elif args.project_id :
+            list_projects(project_or_org='project-id', specifier=args.project_id)
+        else:
+            list_projects(project_or_org='organization', specifier=args.organization)
     except (HttpAccessTokenRefreshError, ApplicationDefaultCredentialsError):
         from core import config
         list_projects(project_or_org='project' if args.project else 'organization',
