@@ -14,6 +14,7 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('--project-name', '-p-name', help='Project name to scan')
 group.add_argument('--project-id', '-p-id', help='Project id to scan')
 group.add_argument('--organization', '-o', help='Organization id to scan')
+group.add_argument('--folder-id', '-f-id', help='Folder id to scan')
 args = parser.parse_args()
 
 storage = Storage('creds.data')
@@ -33,15 +34,32 @@ db = TinyDB('projects.json')
 def list_projects(project_or_org, specifier):
     service = discovery.build('cloudresourcemanager',
                               'v1', credentials=storage.get())
-
+    service2 = discovery.build('cloudresourcemanager',
+                               'v2',credentials=storage.get())
     if project_or_org == "organization":
+        child = service2.folders().list(parent='organizations/%s' % specifier)
+        child_response = child.execute()
         request = service.projects().list(filter='parent.id:%s' % specifier)
+        if 'folders' in child_response.keys() :
+            for folder in child_response['folders'] :
+                list_projects("folder-id", folder['name'].strip(u'folders/'))
     elif project_or_org == "project-name":
         request = service.projects().list(filter='name:%s' % specifier)
     elif project_or_org == "project-id":
         request = service.projects().list(filter='id:%s' % specifier)
+    elif project_or_org=="folder-id":
+        child = service2.folders().list(parent='folders/%s' % specifier)
+        child_response = child.execute()
+        request = service.projects().list(filter='parent.id:%s' % specifier)
+        if 'folders' in child_response.keys() :
+            for folder in child_response['folders'] :
+                list_projects("folder-id", folder['name'].strip(u'folders/'))
+
     else:
         raise Exception('Organization or Project not specified.')
+    add_projects(request, service)
+
+def add_projects(request, service):
     while request is not None:
         response = request.execute()
         if 'projects' in response.keys():
@@ -79,6 +97,8 @@ def main():
             list_projects(project_or_org='project-name', specifier=args.project_name)
         elif args.project_id :
             list_projects(project_or_org='project-id', specifier=args.project_id)
+        elif args.folder_id :
+            list_projects(project_or_org='folder-id', specifier=args.folder_id)
         else:
             list_projects(project_or_org='organization', specifier=args.organization)
     except (HttpAccessTokenRefreshError, ApplicationDefaultCredentialsError):
