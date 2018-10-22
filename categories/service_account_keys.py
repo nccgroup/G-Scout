@@ -3,6 +3,7 @@ import json
 
 from httplib2 import Http
 from oauth2client.file import Storage
+from core.utility import get_gcloud_creds
 
 storage = Storage('creds.data')
 
@@ -22,7 +23,7 @@ def insert_service_account_keys(projectId, db):
 
 
 def list_service_account_keys(sa, projectId):
-    resp, content = storage.get().authorize(Http()).request(
+    resp, content = get_gcloud_creds().authorize(Http()).request(
         "https://iam.googleapis.com/v1/projects/" + projectId + "/serviceAccounts/" + sa['uniqueId'] + "/keys", "GET")
     return json.loads(content)['keys']
 

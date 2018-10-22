@@ -7,7 +7,9 @@ class Category(object):
         items
         "):
 
-    service = discovery.build(product, version, credentials=storage.get())
+    #creds = storage.get()
+    creds = GoogleCredentials.get_application_default()
+    service = discovery.build(product, version, credentials=creds)
     while categories:
         api_entity = getattr(service, categories.pop(0))()
         service = api_entity
