@@ -2,17 +2,6 @@ import json
 
 from oauth2client.file import Storage
 
-storage = Storage('creds.data')
-from httplib2 import Http
-
-
-def insert_service_accounts(projectId, db):
-    resp, content = storage.get().authorize(Http()).request(
-        "https://iam.googleapis.com/v1/projects/" + projectId + "/serviceAccounts/", "GET")
-    for account in json.loads(content)['accounts']:
-        db.table("Service Account").insert(account)
-
-
 def add_role(role):
     def transform(element):
         try:
