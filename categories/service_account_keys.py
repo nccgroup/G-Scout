@@ -3,6 +3,7 @@ import json
 
 from httplib2 import Http
 from oauth2client.file import Storage
+from googleapiclient import discovery
 
 storage = Storage('creds.data')
 
@@ -11,7 +12,7 @@ def insert_service_account_keys(projectId, db):
     service_accounts = db.table("Service Account").all()
     for sa in service_accounts:
         sa_keys = list_service_account_keys(sa, projectId)
-        for sa_key in sa_keys:
+        for sa_key in sa_keys['keys']:
             db.table('Service Account').update(
                 add_key({
                     "keyAlgorithm": sa_key['keyAlgorithm'],
@@ -22,9 +23,10 @@ def insert_service_account_keys(projectId, db):
 
 
 def list_service_account_keys(sa, projectId):
-    resp, content = storage.get().authorize(Http()).request(
-        "https://iam.googleapis.com/v1/projects/" + projectId + "/serviceAccounts/" + sa['uniqueId'] + "/keys", "GET")
-    return json.loads(content)['keys']
+    service = discovery.build("iam", "v1", credentials=storage.get())
+    request = service.projects().serviceAccounts().keys().list(name="projects/" + projectId + "/serviceAccounts/" + sa['email'])
+    response = request.execute()
+    return response
 
 
 # Function to pass Tinydb for the update query
