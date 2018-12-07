@@ -1,14 +1,17 @@
 import logging
+import sys
 
 logging.basicConfig(filename="log.txt")
 from tinydb import TinyDB
 
+from core.utility import object_id_to_directory_name
+from core.utility import get_gcloud_creds
 
 def fetch(projectId):
-    db = TinyDB("project_dbs/" + projectId + ".json")
+    db = TinyDB("project_dbs/" + object_id_to_directory_name(projectId) + ".json")
     from rules import rules
     from display_results import display_results
-    from insert_entity import insert_entity
+    from insert_entity import insert_entity, insert_subnet_entities
     from categories.firewalls import add_affected_instances, add_network_rules
     from categories.roles import insert_roles
     import categories.compute_engine
@@ -16,6 +19,12 @@ def fetch(projectId):
     import categories.service_accounts
     import categories.service_account_IAM_policy
     import categories.buckets
+    
+    # initialize the entity database tables for the project, so that running G-Scout more than once against the same project doesn't result in duplicated data
+    # I did this as an explicit list of tables so that if future versions store data that should persist between runs, those aren't deleted.
+    entity_table_names = [ "Bucket", "Compute Engine", "Finding", "Firewall", "Instance Template", "Network", "Pub/Sub", "Role", "Rule", "Service Account", "Snapshot", "SQL Instance", "Subnet", "Topics" ]
+    for tn in entity_table_names:
+        db.purge_table(tn)
 
     try:
         insert_entity(projectId, "compute", ["networks"], "Network")
@@ -23,6 +32,12 @@ def fetch(projectId):
         print("Failed to fetch networks.")
         logging.exception("networks")
 
+    try:
+        insert_subnet_entities(projectId)
+    except Exception as e:
+        print("Failed to fetch subnets: %s" % (e))
+        logging.exception("subnets: %s" % (e))
+        
     try:
         insert_entity(projectId, "compute", ["firewalls"], "Firewall")
     except Exception as e:
@@ -64,8 +79,8 @@ def fetch(projectId):
         categories.buckets.insert_acls(db)
         categories.buckets.insert_defacls(db)
     except Exception as e:
-        print("Failed to fetch bucket ACLS/DEFACLS.")
-        logging.exception("bucket acls/defacls")
+        print("Failed to fetch bucket ACLS/Default ACLS: %s" % (e))
+        logging.exception("bucket ACLS/Default ACLS: %s" % (e))
 
     try:
         categories.compute_engine.insert_instances(projectId, db)

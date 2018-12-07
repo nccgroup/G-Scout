@@ -1,12 +1,26 @@
 import json
 from googleapiclient import discovery
-from oauth2client.file import Storage
+from core.utility import get_gcloud_creds
 
-storage = Storage('creds.data')
-service = discovery.build('cloudresourcemanager', 'v1', credentials=storage.get())
+service = discovery.build('cloudresourcemanager', 'v1', credentials=get_gcloud_creds())
 
 def insert_roles(projectId, db):
-    request = service.projects().getIamPolicy(resource=projectId, body={})
-    response = request.execute()['bindings']
-    for role in response:
-        db.table('Role').insert(role)
+    try:
+        try:
+            request = service.projects().getIamPolicy(resource=projectId, body={})
+            response = request.execute()['bindings']
+            role_list = None
+            if 'roles' in response:
+                role_list = response['roles']
+            else:
+                print("Warning: no roles returned for project '%s'" % (projectId))
+        except Exception as e:
+            print("Error obtaining role list: %s" % (e))
+        if role_list:
+            for role in role_list:
+                try:
+                    db.table('Role').insert(role)
+                except Exception as e:
+                    print("Error inserting role into database: %s" % (e))
+    except Exception as e:
+        print("Error enumerating roles: %s" % (e))
