@@ -51,7 +51,7 @@ def fetch(projectId):
         logging.exception("roles")
 
     try:
-        categories.service_accounts.insert_service_accounts(projectId, db)
+        insert_entity(projectId, "iam", ["projects","serviceAccounts"], "Service Account", "v1", "projects/", "accounts")
         categories.service_accounts.insert_sa_roles(projectId, db)
     except Exception as e:
         print("Failed to fetch service accounts.")
