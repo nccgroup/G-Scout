@@ -38,6 +38,9 @@ def rules(projectId):
     Rule("allUsers Permissions in Use", "Bucket",
          lambda bucket: [True for acl in bucket['acls'] if acl['scope'] == "allUsers"])
 
+    Rule("allAuthenticatedUsers Permissions in Use", "Bucket",
+         lambda bucket: [True for acl in bucket['acls'] if acl['scope'] == "allAuthenticatedUsers"])
+
     Rule("User Given Permissions", "Bucket",
          lambda bucket: [True for acl in bucket['acls'] if acl['scope'][:4] == "user"])
 
