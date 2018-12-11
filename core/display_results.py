@@ -1,8 +1,11 @@
 import json
 import logging
+import os
 
 from jinja2 import Environment, PackageLoader
 from tinydb import Query
+
+from core.utility import object_id_to_directory_name
 
 logging.basicConfig(filename="log.txt")
 env = Environment(loader=PackageLoader('assets', 'templates'), extensions=['jinja2.ext.do'])
@@ -27,11 +30,24 @@ def display_results(db, projectId):
         return rules
 
     def generate_entities_page(category, header, fields, dropdowns):
-        records = db.table(category).all()
-        template = env.get_template("entity_template.html")
-        file = open("Report Output/" + projectId + "/" + category + "s.html", "w+")
-        file.write(template.render(**{"records": records, "dropdowns": dropdowns, "header": header, "fields": fields}))
-        file.close()
+        try:
+            records = db.table(category).all()
+            template = env.get_template("entity_template.html")
+            entity_file_path = "Report Output/" + object_id_to_directory_name(projectId) + "/Information/" + category + "s.html"
+            entity_dir_path = os.path.dirname(entity_file_path)
+            if not os.path.isdir(entity_dir_path):
+                os.makedirs(entity_dir_path)
+            file = open(entity_file_path, "w+")
+            file_content = None
+            try:
+                file_content = template.render(**{"records": records, "dropdowns": dropdowns, "header": header, "fields": fields})
+            except Exception as e:
+                print("Error rendering output file '%s': %s" % (entity_file_path, e))
+            if file_content:
+                file.write(file_content)
+            file.close()
+        except Exception as e:
+            print("Error generating output file '%s': %s" % (entity_file_path, e))
 
     def generate_findings_page(category, header, fields, dropdowns):
         try:
@@ -41,13 +57,25 @@ def display_results(db, projectId):
                 findings = [db.table(finding['entity']['table']).get(eid=finding['entity']['id']) for finding in
                             findings]
                 template = env.get_template("finding_template.html")
-                file = open("Report Output/" + projectId + "/" + rule_title + ".html", "w+")
-                file.write(template.render(
-                    **{"records": findings, "dropdowns": dropdowns, "header": header, "fields": fields,
-                       "text": rule['title']}))
+                finding_file_path = "Report Output/" + object_id_to_directory_name(projectId) + "/Findings/" + rule_title + ".html"
+                finding_dir_path = os.path.dirname(finding_file_path)
+                if not os.path.isdir(finding_dir_path):
+                    os.makedirs(finding_dir_path)
+                file = open(finding_file_path, "w+")
+                file_content = None
+                try:
+                    file_content = template.render(
+                        **{"records": findings, "dropdowns": dropdowns, "header": header, "fields": fields,
+                           "text": rule['title']})
+                except Exception as e:
+                    print("Error rendering output file '%s': %s" % (entity_file_path, e))
+                if file_content:
+                    file.write(file_content)
                 file.close()
-        except KeyError:
-            print("No " + category + " rules in rule.py")
+        except KeyError as ke:
+            print("No %s rules in rules.py: %s" % (category, ke))
+        except Exception as e:
+            print("Error generating output file '%s': %s" % (entity_file_path, e))
 
     # The following would place only categories with findings in the navbar
     # for finding in findings_table.all():
@@ -74,14 +102,15 @@ def display_results(db, projectId):
         categories.add(rule['category'])
     for category in categories:
         dropdowns[category] = add_to_dropdown(category)
-    generate_pages("Bucket", "name", ["name", "location", "storageClass", "selfLink", "acls", "defacls"], dropdowns)
+    generate_pages("Bucket", "name", ["selfLink", "location", "storageClass", "acls", "defacls"], dropdowns)
     generate_pages("Firewall", "name",
-                   ["network", "sourceRanges", "direction", "destinationRanges", "allowed", "description", "targetTags",
-                    "affectedInstances"], dropdowns)
-    generate_pages("Network", "name", ["firewallRules", "members"], dropdowns)
+                   ["selfLink", "description", "network", "sourceRanges", "direction", "destinationRanges", "allowed", "priority", "disabled", "targetTags",
+                    "affectedInstances" ], dropdowns)
+    generate_pages("Network", "selfLink", ["name", "description", "firewallRules", "members", "subnetworks"], dropdowns)
+    generate_pages("Subnet", "selfLink", ["name", "region", "network", "ipCidrRange", "gatewayAddress", "enableFlowLogs", "privateIpGoogleAccess"], dropdowns)
     generate_pages("Role", "role", ["members"], dropdowns)
-    generate_pages("Compute Engine", "name", ["serviceAccounts", "networkInterfaces", "tags"], dropdowns)
-    generate_pages("SQL Instance", "selfLink",
-                   ["connectionName", "databaseVersion", ["settings", "backupConfiguration"],
-                    ["settings", "ipConfiguration"]], dropdowns)
-    generate_pages("Service Account", "name", ["keys", "iam_policies", "uniqueId", "roles"], dropdowns)
+    generate_pages("Compute Engine", "name", ["selfLink", "machineType", "status", "startRestricted", "serviceAccounts", "networkInterfaces", "disks", "tags"], dropdowns)
+    generate_pages("SQL Instance", "name", 
+                   ["selfLink", "connectionName", "databaseVersion", "ipAddress", ["settings", "dataDiskSizeGb"], ["settings", "backupConfiguration"],
+                    ["settings", "ipConfiguration"], "serviceAccountEmailAddress", "gceZone" ], dropdowns)
+    generate_pages("Service Account", "displayName", ["email", "name", "keys", "iam_policies", "uniqueId", "roles"], dropdowns)

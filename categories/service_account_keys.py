@@ -2,10 +2,8 @@ import datetime
 import json
 
 from httplib2 import Http
-from oauth2client.file import Storage
+from core.utility import get_gcloud_creds
 from googleapiclient import discovery
-
-storage = Storage('creds.data')
 
 
 def insert_service_account_keys(projectId, db):

@@ -2,8 +2,10 @@ from googleapiclient import discovery
 from oauth2client.file import Storage
 from tinydb import Query
 
+from core.utility import get_gcloud_creds
+
 storage = Storage('creds.data')
-service = discovery.build('compute', 'v1', credentials=storage.get())
+service = discovery.build('compute', 'v1', credentials=get_gcloud_creds())
 instances = service.instances()
 instanceGroups = service.instanceGroups()
 instanceTemplates = service.instanceTemplates()

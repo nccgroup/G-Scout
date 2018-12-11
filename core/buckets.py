@@ -4,8 +4,9 @@ from tinydb import TinyDB
 
 db = TinyDB('projects.json')
 storage = Storage('creds.data')
+from core.utility import get_gcloud_creds
 
-service = discovery.build("storage", "v1", credentials=storage.get())
+service = discovery.build("storage", "v1", credentials=get_gcloud_creds())
 
 
 def get_buckets(project):
