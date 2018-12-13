@@ -104,8 +104,8 @@ def display_results(db, projectId):
         dropdowns[category] = add_to_dropdown(category)
     generate_pages("Bucket", "name", ["selfLink", "location", "storageClass", "acls", "defacls"], dropdowns)
     generate_pages("Firewall", "name",
-                   ["selfLink", "description", "network", "sourceRanges", "direction", "destinationRanges", "allowed", "priority", "disabled", "targetTags",
-                    "affectedInstances" ], dropdowns)
+                   ["network", "sourceRanges", "sourceTags","direction", "destinationRanges", "allowed", "description", "targetTags",
+                    "affectedInstances"], dropdowns)
     generate_pages("Network", "selfLink", ["name", "description", "firewallRules", "members", "subnetworks"], dropdowns)
     generate_pages("Subnet", "selfLink", ["name", "region", "network", "ipCidrRange", "gatewayAddress", "enableFlowLogs", "privateIpGoogleAccess"], dropdowns)
     generate_pages("Role", "role", ["members"], dropdowns)
