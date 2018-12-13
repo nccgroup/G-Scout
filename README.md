@@ -28,3 +28,5 @@ You can also run G-Scout on all projects in an organization like this: `python g
 
 To create a custom rule, add it to the rules.py file. A Rule object takes a name, a category, and a filter function. The function will be passed a json object corresponding to the category. 
 To see an example for each category (some of which are altered from the standard API response), see the entity_samples.json file.
+
+Running `python x_project.py` will create a file showing all results across all projects G-Scout has been run on for each finding specified. Change the items in the list of rule names in `x_project.py` to specify which rules to generate the files for.
