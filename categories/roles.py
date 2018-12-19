@@ -8,12 +8,7 @@ def insert_roles(projectId, db):
     try:
         try:
             request = service.projects().getIamPolicy(resource=projectId, body={})
-            response = request.execute()['bindings']
-            role_list = None
-            if 'roles' in response:
-                role_list = response['roles']
-            else:
-                print("Warning: no roles returned for project '%s'" % (projectId))
+            role_list = request.execute()['bindings']
         except Exception as e:
             print("Error obtaining role list: %s" % (e))
         if role_list:
