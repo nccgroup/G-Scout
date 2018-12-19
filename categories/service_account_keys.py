@@ -21,7 +21,7 @@ def insert_service_account_keys(projectId, db):
 
 
 def list_service_account_keys(sa, projectId):
-    service = discovery.build("iam", "v1", credentials=storage.get())
+    service = discovery.build("iam", "v1", credentials=get_gcloud_creds())
     request = service.projects().serviceAccounts().keys().list(name="projects/" + projectId + "/serviceAccounts/" + sa['email'])
     response = request.execute()
     return response
