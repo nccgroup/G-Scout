@@ -60,7 +60,7 @@ def rules(projectId):
     Rule("Bucket Grants Access to allUsers", "Bucket",
          lambda bucket: 'acls' in bucket.keys() and [True for acl in bucket['acls'] if acl['scope'] == "allUsers"])
 
-     Rule("Bucket Grants Access to allAuthenticatedUsers", "Bucket",
+    Rule("Bucket Grants Access to allAuthenticatedUsers", "Bucket",
          lambda bucket: 'acls' in bucket.keys() and [True for acl in bucket['acls'] if acl['scope'] == "allAuthenticatedUsers"])
 
     try:
