@@ -99,8 +99,7 @@ def test_allowed(rule, IPProtocol, ports):
             return True
             
 #It's messy but it seems to work. Will tell you whether another firewall rule overrides the given one
-#GCP now has a "Network Analysis" feature accessible from the console VM Instance Details -> Network Interface Details
-#which is in beta and will be nice if it will have an API
+#Hopefully there will soon be an API endpoint to replace this. Not being used by default.
 from ipaddress import IPv4Network
 def overriden(firewall):
     priority = firewall['priority']
