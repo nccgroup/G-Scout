@@ -19,10 +19,11 @@ def fetch(projectId):
     import categories.service_accounts
     import categories.service_account_IAM_policy
     import categories.buckets
+    from categories.addresses import insert_addresses
     
     # initialize the entity database tables for the project, so that running G-Scout more than once against the same project doesn't result in duplicated data
     # I did this as an explicit list of tables so that if future versions store data that should persist between runs, those aren't deleted.
-    entity_table_names = [ "Bucket", "Compute Engine", "Finding", "Firewall", "Instance Template", "Network", "Pub/Sub", "Role", "Rule", "Service Account", "Snapshot", "SQL Instance", "Subnet", "Topics" ]
+    entity_table_names = ["Address", "Bucket", "Compute Engine", "Finding", "Firewall", "Instance Template", "Network", "Pub/Sub", "Role", "Rule", "Service Account", "Snapshot", "SQL Instance", "Subnet", "Topics"]
     for tn in entity_table_names:
         db.purge_table(tn)
 
@@ -86,17 +87,24 @@ def fetch(projectId):
         categories.compute_engine.insert_instances(projectId, db)
         insert_entity(projectId, "compute", ["instanceTemplates"], "Instance Template")
         categories.compute_engine.insert_instance_groups(projectId, db)
-        categories.compute_engine.add_member_instances(projectId, db)
     except Exception as e:
         print("Failed to fetch compute engine instances.")
+        logging.exception("compute engine instances")
+    try:
+        categories.compute_engine.add_member_instances(projectId, db)
+    except Exception as e:
+        print("Failed add member instances to compute engine instances.")
         logging.exception("compute engine instances")
     try:
         add_network_rules(projectId, db)
         add_affected_instances(projectId, db)
     except Exception as e:
-        print("Failed to display instances/rules with instances.")
-        logging.exception("add network rules/instances")
-
+        print("Failed to display instances/rules with instances.")  
+    try:
+        insert_addresses(projectId, db)
+    except Exception as e:
+        print("Failed to fetch IP addresses")
+        print(e)
     try:
         insert_entity(projectId, "compute", ["snapshots"], "Snapshot")
     except Exception as e:
