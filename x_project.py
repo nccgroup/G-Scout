@@ -16,7 +16,16 @@ env.filters['pretty_print'] = pretty_print
 
 def generate_cross_project_page(header, fields, dropdowns, findings, rule_title):
     template = env.get_template("finding_template.html")
-    file = open("Report Output/cross-project/" + rule_title + ".html", "w+")
+    output_dir = "Report Output/cross-project/rules/"
+    if not os.path.isdir(output_dir):
+        try:
+            os.makedirs(output_dir)
+        except Exception as e:
+            msg = "could not make output directory '%s'. The error encountered was: %s%s%sStack trace:%s%s" % (output_dir, e, os.linesep, os.linesep, os.linesep, traceback.format_exc())
+            print("Error: %s" % (msg))
+            logging.exception(msg)
+
+    file = open("Report Output/cross-project/rules/" + rule_title + ".html", "w+")
     file.write(template.render(
         **{"records": findings, "dropdowns": dropdowns, "header": header, "fields": fields,
             "text": rule_title}))
