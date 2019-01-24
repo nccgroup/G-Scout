@@ -199,3 +199,28 @@ def rules(projectId):
 
     Rule("Unused Firewall Rules", "Firewall",
          lambda firewall: not firewall.get('affectedInstances'))
+
+    #GKE
+    Rule("Legacy ABAC in Use", "Cluster", lambda cluster: cluster.get("legacyAbac"))
+    Rule("Basic Authentication Enabled", "Cluster", lambda cluster: cluster.get("masterAuth").get("username"))
+    Rule("Client Certificate Enabled", "Cluster", lambda cluster: cluster.get("masterAuth").get("clientCertificate"))
+    Rule("No Network Policy", "Cluster", 
+        lambda cluster: cluster.get("addonsConfig").get("networkPolicyConfig").get("disabled"))
+    #I don't know why this is here too, since node version is in node pools. (same with service account and imageType)
+    # Rule("Node Version Outdated", "Cluster", lambda cluster: cluster.get('currentNodeVersion') != '')
+    Rule("Not Using Private Cluster Master", "Cluster", lambda cluster: not cluster.get('privateClusterConfig'))
+    Rule("Not Using Private Cluster Nodes", "Cluster", lambda cluster: not cluster.get('enablePrivateNodes'))
+    Rule("Stackdriver Logging Disabled", "Cluster", lambda cluster: not cluster.get('loggingService') or (cluster.get("loggingService") == "none"))
+    #Rule("Istio Not Enabled", "Cluster", lambda cluster: ) API doesn't seem to return anything about the istio configuration
+    #and the whole addonsConfig doesn't seem to return anything regardless of whether the features are enabled. So in theory the following should work, but don't.
+    #Rule("Dashboard Configured", "Cluster", lambda cluster: cluster.get("addonsConfig").get("kubernetesDashboard")) 
+    #Rule("No Pod Security Policy", "Cluster", lambda cluster: not cluster.get("podSecurityPolicyConfig"))
+
+    #Node Pools
+    Rule("Auto Upgrade Disabled", "Cluster", lambda cluster: cluster.get("nodePools") and [True for nodePool in cluster.get("nodePools") if nodePool.get('management').get('autoUpgrade')])
+    Rule("Image Type not Container Optimized OS", "Cluster", 
+        lambda cluster: cluster.get("nodePools") and [True for nodePool in cluster.get("nodePools") if nodePool.get("config").get("imageType") != "COS"])
+    Rule("Node Uses Default Service Account", "Cluster",
+        lambda cluster: cluster.get("nodePools") and [True for nodePool in cluster.get("nodePools") if "default" in nodePool.get("config").get("serviceAccount")])
+    Rule("Node Version Outdated", "Cluster", 
+        lambda cluster: cluster.get("nodePools") and [True for nodePool in cluster.get("nodePools") if nodePool.get("version") != "1.11.5-gke.5"])

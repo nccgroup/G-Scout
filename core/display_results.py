@@ -115,3 +115,4 @@ def display_results(db, projectId):
                     ["settings", "ipConfiguration"], "serviceAccountEmailAddress", "gceZone" ], dropdowns)
     generate_pages("Service Account", "displayName", ["email", "name", "keys", "iam_policies", "uniqueId", "roles"], dropdowns)
     generate_pages("Address", "address", ["addressType","name","purpose","subnetwork"], dropdowns)
+    generate_pages("Cluster", "name", ["nodeConfig", "addonsConfig","loggingService","privateClusterConfig","enablePrivateNodes","podSecurityPolicyConfig"], dropdowns)

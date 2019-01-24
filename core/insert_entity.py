@@ -1,23 +1,22 @@
 from googleapiclient import discovery
-from oauth2client.file import Storage
 from tinydb import TinyDB, Query
-
 from core.utility import object_id_to_directory_name
 from core.utility import get_gcloud_creds
 
-storage = Storage('creds.data')
 
-
-def insert_entity(projectId, product, categories, table_name, version="v1", prefix="", items="items"):
+def insert_entity(projectId, product, categories, table_name, version="v1", prefix="", items="items", suffix=""):
     db = TinyDB("project_dbs/" + object_id_to_directory_name(projectId) + ".json")
     service = discovery.build(product, version, credentials=get_gcloud_creds())
     while categories:
         api_entity = getattr(service, categories.pop(0))()
         service = api_entity
     try:
-        request = api_entity.list(project=prefix + projectId)
+        request = api_entity.list(project=prefix + projectId + suffix)
     except TypeError:
-        request = api_entity.list(name=prefix + projectId)
+        try:
+            request = api_entity.list(name=prefix + projectId + suffix)
+        except TypeError:
+            request = api_entity.list(parent=prefix + projectId + suffix)
     try:
         while request is not None:
             response = request.execute()
