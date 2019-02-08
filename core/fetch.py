@@ -23,7 +23,7 @@ def fetch(projectId):
     
     # initialize the entity database tables for the project, so that running G-Scout more than once against the same project doesn't result in duplicated data
     # I did this as an explicit list of tables so that if future versions store data that should persist between runs, those aren't deleted.
-    entity_table_names = ["Address", "Bucket", "Compute Engine", "Finding", "Firewall", "Instance Template", "Network", "Pub/Sub", "Role", "Rule", "Service Account", "Snapshot", "SQL Instance", "Subnet", "Topics"]
+    entity_table_names = ["Address", "Bucket", "Cluster", "Compute Engine", "Finding", "Firewall", "Instance Template", "Network", "Pub/Sub", "Role", "Rule", "Service Account", "Snapshot", "SQL Instance", "Subnet", "Topics"]
     for tn in entity_table_names:
         db.purge_table(tn)
 
@@ -123,7 +123,11 @@ def fetch(projectId):
     except Exception as e:
         print("Failed to fetch Pub/Sub topics/subscriptions.")
         logging.exception("pub/sub")
-
+    try:
+        insert_entity(projectId, "container", ['projects','locations','clusters'],"Cluster","v1beta1","projects/","clusters","/locations/-")
+    except:
+        print("Failed to fetch clusters")
+        logging.exception("GKE")
     try:
         rules(projectId)
     except Exception as e:

@@ -211,10 +211,9 @@ def rules(projectId):
     Rule("Not Using Private Cluster Master", "Cluster", lambda cluster: not cluster.get('privateClusterConfig'))
     Rule("Not Using Private Cluster Nodes", "Cluster", lambda cluster: not cluster.get('enablePrivateNodes'))
     Rule("Stackdriver Logging Disabled", "Cluster", lambda cluster: not cluster.get('loggingService') or (cluster.get("loggingService") == "none"))
-    #Rule("Istio Not Enabled", "Cluster", lambda cluster: ) API doesn't seem to return anything about the istio configuration
-    #and the whole addonsConfig doesn't seem to return anything regardless of whether the features are enabled. So in theory the following should work, but don't.
-    #Rule("Dashboard Configured", "Cluster", lambda cluster: cluster.get("addonsConfig").get("kubernetesDashboard")) 
-    #Rule("No Pod Security Policy", "Cluster", lambda cluster: not cluster.get("podSecurityPolicyConfig"))
+    Rule("Istio Not Enabled", "Cluster", lambda cluster: )
+    Rule("Dashboard Configured", "Cluster", lambda cluster: cluster.get("addonsConfig").get("kubernetesDashboard")) 
+    Rule("No Pod Security Policy", "Cluster", lambda cluster: not cluster.get("podSecurityPolicyConfig"))
 
     #Node Pools
     Rule("Auto Upgrade Disabled", "Cluster", lambda cluster: cluster.get("nodePools") and [True for nodePool in cluster.get("nodePools") if nodePool.get('management').get('autoUpgrade')])
