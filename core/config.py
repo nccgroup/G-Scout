@@ -12,7 +12,7 @@ flow = OAuth2WebServerFlow(client_id=CLIENT_ID,
                            client_secret=CLIENT_SECRET,
                            scope='https://www.googleapis.com/auth/cloud-platform')
 
-storage = Storage('creds.data')
+storage = Storage('../creds.data')
 parser = argparse.ArgumentParser(parents=[tools.argparser])
 flags = parser.parse_args(args=[])
 

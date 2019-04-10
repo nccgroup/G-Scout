@@ -13,18 +13,20 @@ zones = service.zones()
 
 
 def insert_instances(projectId, db):
-    for zone in get_zones(projectId):
-        request = service.instances().list(project=projectId, zone=zone)
-        while request is not None:
-            response = request.execute()
-            if (response.get('items')):
-                for instance in response['items']:
-                    db.table('Compute Engine').insert(instance)
-            try:
-                request = service.instances().list.next(previous_request=request, previous_response=response)
-            except AttributeError:
-                request = None
+    out = []
+    request = service.instances().aggregatedList(project=projectId)
+    while request is not None:
+        response = request.execute()
+        out.append(response)
+        request = service.instances().aggregatedList_next(previous_request=request, previous_response=response)
+    write_results(out)
 
+def write_results(out):
+    for segment in out:
+        for zone in segment['items'].keys():
+            if segment['items'][zone].get('instances'):
+                for instance in segment['items'][zone].get('instances'):
+                    db.table('Compute Engine').insert(instance)
 
 def insert_instance_groups(projectId, db):
     request = instanceGroups.aggregatedList(project=projectId)
