@@ -211,7 +211,7 @@ def rules(projectId):
     Rule("Not Using Private Cluster Master", "Cluster", lambda cluster: not cluster.get('privateClusterConfig'))
     Rule("Not Using Private Cluster Nodes", "Cluster", lambda cluster: not cluster.get('enablePrivateNodes'))
     Rule("Stackdriver Logging Disabled", "Cluster", lambda cluster: not cluster.get('loggingService') or (cluster.get("loggingService") == "none"))
-    Rule("Istio Not Enabled", "Cluster", lambda cluster: )
+    #Rule("Istio Not Enabled", "Cluster", lambda cluster: )
     Rule("Dashboard Configured", "Cluster", lambda cluster: cluster.get("addonsConfig").get("kubernetesDashboard")) 
     Rule("No Pod Security Policy", "Cluster", lambda cluster: not cluster.get("podSecurityPolicyConfig"))
 

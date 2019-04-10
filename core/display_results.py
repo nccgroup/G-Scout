@@ -73,7 +73,7 @@ def display_results(db, projectId):
                     file.write(file_content)
                 file.close()
         except KeyError as ke:
-            print("No %s rules in rules.py: %s" % (category, ke))
+            pass
         except Exception as e:
             print("Error generating output file '%s': %s" % (entity_file_path, e))
 
