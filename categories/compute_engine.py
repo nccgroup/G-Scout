@@ -19,9 +19,9 @@ def insert_instances(projectId, db):
         response = request.execute()
         out.append(response)
         request = service.instances().aggregatedList_next(previous_request=request, previous_response=response)
-    write_results(out)
+    write_results(out, db)
 
-def write_results(out):
+def write_results(out, db):
     for segment in out:
         for zone in segment['items'].keys():
             if segment['items'][zone].get('instances'):
